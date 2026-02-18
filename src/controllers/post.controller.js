@@ -1,35 +1,27 @@
 const postModel = require("../models/post.model")
-const jwt = require("jsonwebtoken")
 const ImageKit = require("@imagekit/nodejs")
 const { toFile } = require("@imagekit/nodejs")
+const likeModel = require("../models/like.model")
 const mongoose = require("mongoose")
 
 const imagekit = new ImageKit({
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
 })
 
+/**
+ * @function createPostController
+ * @route   POST /api/posts
+ * @desc    Create a new post with image upload using ImageKit
+ * @access  Private (Authenticated user only)
+ * @body    caption (optional), image (multipart/form-data)
+ * @returns Newly created post object
+ */
+
+
 async function createPostController(req, res) {
-
     try {
-
-        console.log(req.body, req.file)
-
-        const token = req.cookies.token
-
-        if (!token) {
-            return res.status(401).json({
-                message: "Token not provided, Unauthorized access"
-            })
-        }
-
-        
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-        if (!req.file) {
-            return res.status(400).json({
-                message: "Image is required"
-            })
-        }
 
         const uploadedFile = await imagekit.files.upload({
             file: await toFile(
@@ -43,25 +35,36 @@ async function createPostController(req, res) {
         const post = await postModel.create({
             caption: req.body.caption,
             image_url: uploadedFile.url,
-            user: decoded.id
+            user: req.user.id
         })
 
-        res.status(201).json({
+        return res.status(201).json({
+            success: true,
             message: "Post created successfully",
-            post
+            data: post
         })
 
     } catch (error) {
-
         console.log(error)
-
-        res.status(500).json({
+        return res.status(500).json({
+            success: false,
             message: "Something went wrong",
             error: error.message
         })
     }
 }
-  async function getSinglePostController(req, res) {
+
+/**
+ * @function getSinglePostController
+ * @route   GET /api/posts/:id
+ * @desc    Fetch a single post by its ID
+ * @access  Private
+ * @param   id - MongoDB Post ObjectId
+ * @returns Post details with populated user info
+ */
+
+
+async function getSinglePostController(req, res) {
     try {
 
         const postId = req.params.id
@@ -99,8 +102,112 @@ async function createPostController(req, res) {
     }
 }
 
+/**
+ * @function getAllPostsController
+ * @route   GET /api/posts
+ * @desc    Fetch all posts for feed sorted by newest first
+ * @access  Private
+ * @returns Array of posts with populated user details
+ */
+
+
+
+async function getAllPostsController(req, res) {
+    try {
+
+        const posts = await postModel
+            .find()
+            .populate("user", "username profilePic")
+            .sort({ createdAt: -1 })
+
+        return res.status(200).json({
+            success: true,
+            message: "Feed fetched successfully",
+            totalPosts: posts.length,
+            data: posts
+        })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong"
+        })
+    }
+}
+
+
+/**
+ * @function likePostController
+ * @route   POST /api/posts/like/:postId
+ * @desc    Like a post (creates a like record in database)
+ * @access  Private
+ * @param   postId - MongoDB Post ObjectId
+ * @returns Like record for the post
+ */
+
+
+async function likePostController(req,res){
+    const username = req.user.username
+    const postId = req.params.postId
+
+    const post = await postModel.findById(postId)
+
+    if(!post){
+        return res.status(404).json({
+            message:"Post not found"
+        })
+
+        
+    }
+    const like = await likeModel.create({
+           post : postId,
+           user: username
+ 
+        })
+
+        res.status(200).json({
+            message:"post liked successfully",
+            like 
+        })
+}
+
+
+/**
+ * @function unlikePostController
+ * @route   DELETE /api/posts/unlike/:postId
+ * @desc    Remove like from a post (Unlike)
+ * @access  Private
+ * @param   postId - MongoDB Post ObjectId
+ */
+
+
+async function unlikePostController(req,res){
+    const username = req.user.username
+    const postId = req.params.postId
+
+    const deletedLike = await likeModel.findOneAndDelete({
+           post : postId,
+           user: username
+ 
+        })
+
+        if(!deletedLike){
+            return res.status(404).json({
+                message:"You have not liked this post"
+            })
+        }
+
+        res.status(200).json({
+            message:"Post unliked successfully",
+            unlike: deletedLike 
+        })
+}
 
 module.exports = {
     createPostController,
-    getSinglePostController
+    getSinglePostController,
+    getAllPostsController,
+    likePostController,
+    unlikePostController
 }

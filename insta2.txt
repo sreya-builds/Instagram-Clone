@@ -1,0 +1,16 @@
+Instagram ka frontend part 
+1. Desktop layout mai - 
+    A.Sidebar
+      1.Home
+      2.Profile
+      3.Reels
+      4.Search
+      5.Explore
+      6.Create
+      7.Notification
+    B.feed
+    C.right panel
+
+ 2. mobile layout mai -
+    a.feed full width 
+    b.bottom nav    
