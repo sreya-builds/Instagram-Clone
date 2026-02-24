@@ -1,0 +1,12 @@
+Ui
+ 1. Ui ka kaam ui dekhana user ko aur navigate karna 
+Hooks
+1. Manage karna state and api wala 
+State
+1. State manage karna 
+   a. loading
+   b. user
+   c.post list
+   d. error
+Api
+1. backend se communicate karna 
