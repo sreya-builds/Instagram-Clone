@@ -1,59 +1,49 @@
-const express = require("express");
+const express = require("express")
+const postRouter = express.Router()
 const postController = require("../controllers/post.controller")
-
-const postRouter = express.Router();
-
 const multer = require("multer")
-const upload = multer({storage:multer.memoryStorage()})
+const upload = multer({ storage: multer.memoryStorage() })
 const authMiddleware = require("../middlewares/auth.middleware")
 
-/**
- * @route   POST /api/posts
- * @desc    Create a new post with image upload
- * @access  Private (Authenticated users only)
- * @body    image (multipart/form-data), caption (optional)
- */
-
-postRouter.post("/",upload.single("image"),authMiddleware ,postController.createPostController)
 
 /**
- * @route   GET /api/posts
- * @desc    Get all posts (Feed)
- * @access  Private
+ * @route POST /api/posts [protected]
+ * @description Create a post with the content and image (optional) provided in the request body. The post should be associated with the user that the request come from
  */
-postRouter.get("/",authMiddleware, postController.getAllPostsController)
-/**
- * @route   GET /api/posts/:id
- * @desc    Get a single post by ID
- * @access  Private
- * @param   id - Post ID
- */
-postRouter.get("/:id",authMiddleware, postController.getSinglePostController)
+postRouter.post("/", upload.single("image"), authMiddleware, postController.createPostController)
+
 
 /**
- * @function likePostController
- * @route   POST /api/posts/like/:postId
- * @desc    Like a post by creating a like record
- * @access  Private (Authenticated users only)
- * @param   postId - MongoDB Post ObjectId
- * @returns Like record of the user for the post
+ * @route GET /api/posts/ [protected]
+ * @description Get all the posts created by the user that the request come from. also return the total number of posts created by the user
  */
+postRouter.get("/", authMiddleware, postController.getPostController)
 
-
-postRouter.post("/like/:postId",authMiddleware,postController.likePostController)
 
 /**
- * @function unlikePostController
- * @route   DELETE /api/posts/unlike/:postId
- * @desc    Unlike a post by removing the existing like record
- * @access  Private (Authenticated users only)
- * @param   postId - MongoDB Post ObjectId
- * @returns Deleted like record
+ * @route GET /api/posts/details/:postid
+ * @description return an detail about specific post with the id. also check whether the post belongs to the user that the request come from
  */
+postRouter.get("/details/:postId", authMiddleware, postController.getPostDetailsController)
 
-postRouter.delete("/unlike/:postId",authMiddleware,postController.unlikePostController)
+
+/**
+ * @route POST /api/posts/like/:postid
+ * @description like a post with the id provided in the request params. 
+ */
+postRouter.post("/like/:postId", authMiddleware, postController.likePostController)
+postRouter.post("/unlike/:postId", authMiddleware, postController.unLikePostController)
 
 
- 
+/**
+ * @route GET /api/posts/feed
+ * @description get all the post created in the DB
+ * @access private
+ */
+postRouter.get("/feed", authMiddleware, postController.getFeedController)
 
-module.exports = postRouter;
+
+
+
+
+module.exports = postRouter

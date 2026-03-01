@@ -1,22 +1,25 @@
-const mongoose = require ("mongoose")
+const mongoose = require("mongoose")
 
 const followSchema = new mongoose.Schema({
   follower: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
   },
   followee: {
-    type: String
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
   },
   status: {
     type: String,
-    enum: ["pending", "accepted","rejected"],
+    enum: ["pending", "accepted", "rejected"],
     default: "pending"
   }
-  
 }, { timestamps: true })
 
-followSchema.index({follower: 1, followee: 1,},{ unique:true })
+followSchema.index({ follower: 1, followee: 1 }, { unique: true })
 
-const followModel = mongoose.model("follows",followSchema)
+const followModel = mongoose.model("Follow", followSchema)
 
 module.exports = followModel

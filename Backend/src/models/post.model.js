@@ -2,12 +2,10 @@ const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema(
   {
-    caption: {
+     caption: {
       type: String,
-      maxlength: 500,
-      default: "",
+      default: ""
     },
-
     image_url: {
       type: String,
       required: [true,"imgUrl is required for creating a post"]

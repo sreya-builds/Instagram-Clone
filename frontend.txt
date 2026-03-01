@@ -1,0 +1,30 @@
+src
+ ├── app
+ │    ├── App.jsx
+ │    ├── routes.jsx
+ │
+ ├── features
+ │    ├── auth
+ │    │    ├── pages
+ │    │    ├── hooks
+ │    │    ├── services
+ │
+ │    ├── feed
+ │    │    ├── pages
+ │    │    ├── components
+ │    │    ├── hooks
+ │    │    ├── services
+ │
+ │    ├── posts
+ │    │    ├── components
+ │    │    ├── hooks
+ │    │    ├── services
+ │
+ │    ├── profile
+ │    │    ├── pages
+ │    │    ├── hooks
+ │    │    ├── services
+ │
+ │    ├── follow
+ │         ├── hooks
+ │         ├── services

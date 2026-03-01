@@ -1,120 +1,89 @@
 const followModel = require("../models/follow.model")
 const userModel = require("../models/user.model")
 
+// SEND FOLLOW REQUEST
+const sendFollowRequestController = async (req, res) => {
 
-async function sendFollowRequestController(req, res) {
+  const followerId = req.user.id
+  const { followeeId } = req.params
 
-  const follower = req.user.username;
-  const followee = req.params.username;
-
-  if (follower === followee) {
-    return res.status(400).json({
-      message: "You cannot follow yourself"
-    });
+  if (followerId === followeeId) {
+    return res.status(400).json({ message: "You cannot follow yourself" })
   }
 
-  const userExists = await userModel.findOne({ username: followee });
+  const existingRequest = await followModel.findOne({
+    follower: followerId,
+    followee: followeeId
+  })
 
-  if (!userExists) {
-    return res.status(404).json({
-      message: "User not found"
-    });
+  if (existingRequest) {
+    return res.status(400).json({ message: "Request already exists" })
   }
 
-  const existingFollow = await followModel.findOne({
-    follower,
-    followee
-  });
-
-  if (existingFollow) {
-    return res.status(400).json({
-      message: "Follow request already exists"
-    });
-  }
-
-  // Create request
-  const follow = await followModel.create({
-    follower,
-    followee,
+  const newRequest = await followModel.create({
+    follower: followerId,
+    followee: followeeId,
     status: "pending"
-  });
+  })
 
-  return res.status(201).json({
-    message: "Follow request sent successfully",
-    follow
-  });
+  res.status(201).json(newRequest)
 }
 
-async function acceptFollowRequestController(req, res) {
 
-  const followId = req.params.followId;
+// ACCEPT REQUEST
+const acceptFollowRequestController = async (req, res) => {
 
-  const follow = await followModel.findById(followId);
+  const { requestId } = req.params
 
-  if (!follow) {
-    return res.status(404).json({
-      message: "Follow request not found"
-    });
+  const request = await followModel.findById(requestId)
+
+  if (!request) {
+    return res.status(404).json({ message: "Request not found" })
   }
 
-  // Only followee can accept
-  if (follow.followee !== req.user.username) {
-    return res.status(403).json({
-      message: "You are not allowed to accept this request"
-    });
+  if (request.followee.toString() !== req.user.id) {
+    return res.status(403).json({ message: "Not authorized" })
   }
 
-  if (follow.status === "accepted") {
-    return res.status(400).json({
-      message: "Follow request already accepted"
-    });
-  }
+  request.status = "accepted"
+  await request.save()
 
-  follow.status = "accepted";
-  await follow.save();
+  await userModel.findByIdAndUpdate(request.followee, {
+    $addToSet: { followers: request.follower }
+  })
 
-  return res.status(200).json({
-    message: "Follow request accepted successfully",
-    follow
-  });
+  await userModel.findByIdAndUpdate(request.follower, {
+    $addToSet: { following: request.followee }
+  })
+
+  res.json({ message: "Follow request accepted" })
 }
 
-async function rejectFollowRequestController(req, res) {
 
-  const followId = req.params.followId;
+// REJECT REQUEST
+const rejectFollowRequestController = async (req, res) => {
 
-  const follow = await followModel.findById(followId);
+  const { requestId } = req.params
 
-  if (!follow) {
-    return res.status(404).json({
-      message: "Follow request not found"
-    });
+  const request = await followModel.findById(requestId)
+
+  if (!request) {
+    return res.status(404).json({ message: "Request not found" })
   }
 
-  if (follow.followee !== req.user.username) {
-    return res.status(403).json({
-      message: "Not allowed"
-    });
+  if (request.followee.toString() !== req.user.id) {
+    return res.status(403).json({ message: "Not authorized" })
   }
 
-  if (follow.status !== "pending") {
-    return res.status(400).json({
-      message: `Follow request already ${follow.status}`
-    });
-  }
+  request.status = "rejected"
+  await request.save()
 
-  follow.status = "rejected";
-  await follow.save();
-
-  return res.status(200).json({
-    message: "Follow request rejected successfully"
-  });
+  res.json({ message: "Follow request rejected" })
 }
-
 
 
 module.exports = {
   sendFollowRequestController,
   acceptFollowRequestController,
   rejectFollowRequestController
-};
+}
