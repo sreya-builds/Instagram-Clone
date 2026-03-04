@@ -1,8 +1,6 @@
 const followModel = require("../models/follow.model")
 const userModel = require("../models/user.model")
 
-
-/*getUserProfileController*/
 async function getUserProfileController(req, res) {
 
   const username = req.params.username
@@ -10,24 +8,30 @@ async function getUserProfileController(req, res) {
   const user = await userModel
     .findOne({ username })
     .select("-password")
-    .populate("followers", "username profilePic")
-    .populate("following", "username profilePic")
 
   if (!user) {
-    return res.status(404).json({
-      message: "User not found"
-    })
+    return res.status(404).json({ message: "User not found" })
   }
+
+  const followers = await followModel
+    .find({ followee: user._id, status: "accepted" })
+    .populate("follower", "username profilePic")
+
+  const following = await followModel
+    .find({ follower: user._id, status: "accepted" })
+    .populate("followee", "username profilePic")
 
   res.json({
     user,
-    totalFollowers: user.followers.length,
-    totalFollowing: user.following.length
+    totalFollowers: followers.length,
+    totalFollowing: following.length
   })
-
 }
-  /*followUserController*/
-  async function followUserController(req, res) {
+
+
+/* ================= FOLLOW USER ================= */
+
+async function followUserController(req, res) {
 
   const currentUserId = req.user.id
   const username = req.params.username
@@ -42,22 +46,27 @@ async function getUserProfileController(req, res) {
     return res.status(400).json({ message: "You cannot follow yourself" })
   }
 
-  const currentUser = await userModel.findById(currentUserId)
+  const existingFollow = await followModel.findOne({
+    follower: currentUserId,
+    followee: targetUser._id
+  })
 
-  if (currentUser.following.includes(targetUser._id)) {
+  if (existingFollow) {
     return res.status(400).json({ message: "Already following this user" })
   }
 
-  currentUser.following.push(targetUser._id)
-  targetUser.followers.push(currentUser._id)
-
-  await currentUser.save()
-  await targetUser.save()
+  await followModel.create({
+    follower: currentUserId,
+    followee: targetUser._id,
+    status: "accepted"
+  })
 
   res.json({ message: "Followed successfully" })
 }
 
-/*unfollowUser*/
+
+/* ================= UNFOLLOW USER ================= */
+
 async function unfollowUserController(req, res) {
 
   const currentUserId = req.user.id
@@ -69,27 +78,25 @@ async function unfollowUserController(req, res) {
     return res.status(404).json({ message: "User not found" })
   }
 
-  const currentUser = await userModel.findById(currentUserId)
+  const follow = await followModel.findOne({
+    follower: currentUserId,
+    followee: targetUser._id
+  })
 
-  if (!currentUser.following.includes(targetUser._id)) {
+  if (!follow) {
     return res.status(400).json({ message: "You are not following this user" })
   }
 
-  currentUser.following = currentUser.following.filter(
-    id => id.toString() !== targetUser._id.toString()
-  )
-
-  targetUser.followers = targetUser.followers.filter(
-    id => id.toString() !== currentUserId
-  )
-
-  await currentUser.save()
-  await targetUser.save()
+  await followModel.findOneAndDelete({
+    follower: currentUserId,
+    followee: targetUser._id
+  })
 
   res.json({ message: "Unfollowed successfully" })
 }
 
-/*updateProfile*/
+
+/* ================= UPDATE PROFILE ================= */
 
 async function updateProfileController(req, res) {
 
@@ -107,37 +114,50 @@ async function updateProfileController(req, res) {
     user: updatedUser
   })
 }
- 
-/*getFollower*/
+
+
+/* ================= GET FOLLOWERS ================= */
+
 async function getFollowersController(req, res) {
 
   const username = req.params.username
 
-  const user = await userModel
-    .findOne({ username })
-    .populate("followers", "username profilePic")
+  const user = await userModel.findOne({ username })
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" })
+  }
+
+  const followers = await followModel
+    .find({ followee: user._id, status: "accepted" })
+    .populate("follower", "username profilePic")
 
   res.json({
-    followers: user.followers
+    followers: followers.map(f => f.follower)
   })
 }
 
 
-/*getFollowing*/
+/* ================= GET FOLLOWING ================= */
 
 async function getFollowingController(req, res) {
 
   const username = req.params.username
 
-  const user = await userModel
-    .findOne({ username })
-    .populate("following", "username profilePic")
+  const user = await userModel.findOne({ username })
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" })
+  }
+
+  const following = await followModel
+    .find({ follower: user._id, status: "accepted" })
+    .populate("followee", "username profilePic")
 
   res.json({
-    following: user.following
+    following: following.map(f => f.followee)
   })
 }
-
 
 
 module.exports = {

@@ -4,46 +4,22 @@ const authMiddleware = require("../middlewares/auth.middleware");
 
 const userRouter = express.Router();
 
-/**
- * @route   GET /api/users/:username
- * @desc    Get user profile by username
- * @access  Private
- */
-userRouter.get("/:username", authMiddleware, userController.getUserProfileController);
-
-/**
- * @route   POST /api/users/follow/:username
- * @desc    Follow a user
- * @access  Private
- */
+/* Follow */
 userRouter.post("/follow/:username", authMiddleware, userController.followUserController);
 
-/**
- * @route   POST /api/users/unfollow/:username
- * @desc    Unfollow a user
- * @access  Private
- */
+/* Unfollow */
 userRouter.post("/unfollow/:username", authMiddleware, userController.unfollowUserController);
 
-/**
- * @route   PATCH /api/users/edit
- * @desc    Update logged-in user's profile
- * @access  Private
- */
+/* Update Profile */
 userRouter.patch("/edit", authMiddleware, userController.updateProfileController);
 
-/**
- * @route   GET /api/users/:username/followers
- * @desc    Get followers list
- * @access  Private
- */
+/* Get Followers */
 userRouter.get("/:username/followers", authMiddleware, userController.getFollowersController);
 
-/**
- * @route   GET /api/users/:username/following
- * @desc    Get following list
- * @access  Private
- */
+/* Get Following */
 userRouter.get("/:username/following", authMiddleware, userController.getFollowingController);
+
+/* Get User Profile */
+userRouter.get("/:username", authMiddleware, userController.getUserProfileController);
 
 module.exports = userRouter

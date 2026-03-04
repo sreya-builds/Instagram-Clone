@@ -1,30 +1,128 @@
+===============================
+SOCIAL DEV APP - FRONTEND STRUCTURE
+===============================
+
 src
- ├── app
- │    ├── App.jsx
- │    ├── routes.jsx
- │
- ├── features
- │    ├── auth
- │    │    ├── pages
- │    │    ├── hooks
- │    │    ├── services
- │
- │    ├── feed
- │    │    ├── pages
- │    │    ├── components
- │    │    ├── hooks
- │    │    ├── services
- │
- │    ├── posts
- │    │    ├── components
- │    │    ├── hooks
- │    │    ├── services
- │
- │    ├── profile
- │    │    ├── pages
- │    │    ├── hooks
- │    │    ├── services
- │
- │    ├── follow
- │         ├── hooks
- │         ├── services
+│
+├── app
+│   ├── App.jsx
+│   ├── routes.jsx
+│   ├── store.js (optional future use)
+│
+├── shared
+│   ├── components
+│   │   ├── Navbar.jsx
+│   │   ├── Sidebar.jsx
+│   │   ├── Loader.jsx
+│   │   ├── Modal.jsx
+│   │
+│   ├── hooks
+│   ├── utils
+│   ├── constants
+│
+├── features
+│
+│   ├── auth
+│   │   ├── pages
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   ├── hooks
+│   │   │   ├── useAuth.js
+│   │   ├── services
+│   │   │   ├── auth.api.js
+│
+│   ├── feed
+│   │   ├── pages
+│   │   │   ├── Feed.jsx
+│   │   ├── components
+│   │   │   ├── FeedCard.jsx
+│   │   │   ├── FeedList.jsx
+│   │   ├── hooks
+│   │   │   ├── useFeed.js
+│   │   ├── services
+│   │   │   ├── feed.api.js
+│
+│   ├── posts
+│   │   ├── components
+│   │   │   ├── CreatePost.jsx
+│   │   │   ├── PostCard.jsx
+│   │   ├── hooks
+│   │   │   ├── usePost.js
+│   │   ├── services
+│   │   │   ├── post.api.js
+│
+│   ├── profile
+│   │   ├── pages
+│   │   │   ├── Profile.jsx
+│   │   ├── components
+│   │   │   ├── ProfileHeader.jsx
+│   │   │   ├── ProfilePosts.jsx
+│   │   ├── hooks
+│   │   │   ├── useProfile.js
+│   │   ├── services
+│   │   │   ├── profile.api.js
+│
+│   ├── follow
+│   │   ├── components
+│   │   │   ├── FollowButton.jsx
+│   │   │   ├── RequestList.jsx
+│   │   ├── hooks
+│   │   │   ├── useFollow.js
+│   │   ├── services
+│   │   │   ├── follow.api.js
+│
+│
+│   ==========================================
+│   ADDITIONAL UNIQUE FEATURES (NEXT LEVEL)
+│   ==========================================
+│
+│   ├── devModeProfile
+│   │   ├── components
+│   │   │   ├── TechStackBadges.jsx
+│   │   │   ├── GithubStats.jsx
+│   │   │   ├── ContributionStreak.jsx
+│   │   ├── hooks
+│   │   │   ├── useDevProfile.js
+│   │   ├── services
+│   │   │   ├── devProfile.api.js
+│   │
+│   │   FEATURE DETAILS:
+│   │   - User tech stack badges (React, Node, AI, etc.)
+│   │   - GitHub profile link integration
+│   │   - Contribution streak display
+│   │   - LeetCode / Codeforces stats section
+│   │
+│
+│   ├── skillFollowSystem
+│   │   ├── components
+│   │   │   ├── SkillCard.jsx
+│   │   │   ├── SkillFollowButton.jsx
+│   │   ├── hooks
+│   │   │   ├── useSkillFollow.js
+│   │   ├── services
+│   │   │   ├── skill.api.js
+│   │
+│   │   FEATURE DETAILS:
+│   │   - Users can follow specific skills (React, AI, Web3, etc.)
+│   │   - Feed filtered by followed skills
+│   │   - Skill based trending posts
+│   │   - Skill popularity counter
+│   │
+│
+│   ├── collaborationRequest
+│   │   ├── components
+│   │   │   ├── CollabButton.jsx
+│   │   │   ├── CollabRequestList.jsx
+│   │   │   ├── CollabModal.jsx
+│   │   ├── hooks
+│   │   │   ├── useCollab.js
+│   │   ├── services
+│   │   │   ├── collab.api.js
+│   │
+│   │   FEATURE DETAILS:
+│   │   - Send collaboration request to another developer
+│   │   - Accept / Reject collaboration
+│   │   - Project idea mention
+│   │   - Hackathon / Startup invite option
+│
+└── main.jsx

@@ -17,31 +17,20 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "password is required"],
-      select:false
+      select: false
     },
 
     profilePic: {
       type: String,
-      default:"https://ik.imagekit.io/hc2c5agno/download.png"
+      default: "https://ik.imagekit.io/hc2c5agno/download.png"
     },
 
     bio: {
       type: String
-    },
-    followers: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
     }
-  ],
-
-  following: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    }
-  ]
-  })
+  },
+  { timestamps: true }
+)
 
 const userModel = mongoose.model("User", userSchema)
 

@@ -1,20 +1,129 @@
-==> Authentication
-    => register (1. user ka data save krna. 2. token user ko dena)
-    => login
-    => logout (token blacklisting)
-    => [OTP based registration]
+SOCIAL DEV APP - COMPLETE BACKEND FEATURE DOCUMENTATION
+========================================================
 
-==> post
-    => create
-    => can see the feed
-    => like posts (collection types)
-    => save post
+APPLICATION TYPE:
+Dual Mode Social Platform (Social Mode + Developer Mode)
 
-==> users
-    => followers
-    => following
 
-==> followModel
-   ==>Follow API
-   ==>Unfollow API
-   ==>status for private account
+====================================
+1. AUTHENTICATION MODULE
+====================================
+
+Basic Features:
+- Register (Save user + Generate JWT Token)
+- Login
+- Logout (Token Blacklisting)
+- OTP Based Registration
+
+Advanced Features:
+- Email Verification
+- Refresh Token System
+- Forgot Password (Reset Link)
+- Device Based Login Tracking
+- Account Mode (social / developer / both)
+
+
+====================================
+2. USER MODULE
+====================================
+
+Basic Features:
+- Followers
+- Following
+- Private Account Support
+
+Advanced Features:
+- Skills Array
+- GitHub Link
+- LeetCode Link
+- Portfolio Link
+- Experience Level
+- Profile Analytics (views, reach)
+- Verified Badge
+- Block User
+- Report User
+
+
+====================================
+3. POST MODULE
+====================================
+
+Basic Features:
+- Create Post
+- View Feed
+- Like Post
+- Save Post
+
+Advanced Features:
+- Post Types (image, text, devlog, project, collab)
+- Skill Tags
+- Hashtags
+- Comment System
+- Share Post
+- Repost
+- Post Privacy (public / followers)
+- Pinned Post
+
+
+====================================
+4. FOLLOW SYSTEM
+====================================
+
+Basic:
+- Follow API
+- Unfollow API
+- Private Account (Pending / Accepted)
+
+Advanced:
+- Follow Request Notification
+- Suggested Users
+- Mutual Followers Logic
+- Close Friends (Social Mode)
+- Skill Based Follow (Dev Mode)
+
+
+====================================
+5. DEVELOPER MODE FEATURES
+====================================
+
+- Skill Follow System
+- Contribution Streak
+- GitHub Stats Integration
+- Developer Leaderboard
+- Collaboration Requests
+    - Send Request
+    - Accept / Reject
+    - Hackathon / Startup Invite
+
+
+====================================
+6. NOTIFICATION SYSTEM
+====================================
+
+Types:
+- Like
+- Comment
+- Follow
+- Follow Request
+- Collaboration Request
+
+Fields:
+- sender
+- receiver
+- referenceId
+- isRead
+- createdAt
+
+
+====================================
+7. FUTURE FEATURES
+====================================
+
+- Real-time Chat (Socket.io)
+- Trending Algorithm
+- Skill Popularity Counter
+- Resume Generator
+- AI Based Skill Suggestions
+
+
+END OF DOCUMENTATION
